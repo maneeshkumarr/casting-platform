@@ -1,5 +1,5 @@
 const express = require("express");
-const app = require("./src/routes/app");
+const app = require('./src/app');
 const db = require("./src/models");
 const dotenv = require("dotenv");
 const path = require("path");
