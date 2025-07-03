@@ -94,7 +94,8 @@ class _RegisterScreenState extends State<RegisterScreen>
     try {
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('https://your-backend-url.com/api/register'),
+        Uri.parse('http://10.241.53.205:8080/api/auth/register'),
+
       );
 
       request.fields.addAll({
@@ -120,7 +121,10 @@ class _RegisterScreenState extends State<RegisterScreen>
       }
 
       var response = await request.send();
-      if (response.statusCode == 200) {
+final responseBody = await response.stream.bytesToString();
+print('Response status: ${response.statusCode}');
+print('Response body: $responseBody');
+      if (response.statusCode == 200 || response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('✅ Registered successfully!'),
