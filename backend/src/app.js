@@ -4,7 +4,11 @@ const authRoutes = require('./routes/auth.routes');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve uploaded images
 app.use("/uploads", express.static("uploads"));
-app.use("/api", authRoutes);
+
+// Make route like: /api/auth/register
+app.use("/api/auth", authRoutes);
 
 module.exports = app;
