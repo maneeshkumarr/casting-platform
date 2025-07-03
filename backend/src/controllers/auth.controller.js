@@ -21,7 +21,10 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Handle photos
-    const photos = req.files?.map(file => file.filename) || [];
+const photos = req.files
+  .filter(file => file.fieldname === 'photos')
+  .map(file => file.filename);
+
 
     // Save to DB
     const user = await User.create({
