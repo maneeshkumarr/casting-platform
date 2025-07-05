@@ -95,7 +95,6 @@ class _RegisterScreenState extends State<RegisterScreen>
       var request = http.MultipartRequest(
         'POST',
         Uri.parse('http://10.241.53.205:8080/api/auth/register'),
-
       );
 
       request.fields.addAll({
@@ -121,9 +120,9 @@ class _RegisterScreenState extends State<RegisterScreen>
       }
 
       var response = await request.send();
-final responseBody = await response.stream.bytesToString();
-print('Response status: ${response.statusCode}');
-print('Response body: $responseBody');
+      final responseBody = await response.stream.bytesToString();
+      print('Response status: ${response.statusCode}');
+      print('Response body: $responseBody');
       if (response.statusCode == 200 || response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -216,6 +215,7 @@ print('Response body: $responseBody');
                             child: buildTextField(
                               'Middle Name',
                               (v) => middleName = v,
+                              isOptional: true,
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -223,6 +223,7 @@ print('Response body: $responseBody');
                             child: buildTextField(
                               'Last Name',
                               (v) => lastName = v,
+                              isOptional: true,
                             ),
                           ),
                         ],
@@ -294,7 +295,7 @@ print('Response body: $responseBody');
                           'Kollywood',
                           'Mollywood',
                           'Sandalwood',
-                          'Hollywood',
+                         /* 'Hollywood', */
                           'Pollywood',
                           'Bhojiwood',
                           'Marathi',
@@ -322,6 +323,7 @@ print('Response body: $responseBody');
                         'Contact Number',
                         (v) => contact = v,
                         keyboardType: TextInputType.phone,
+                        isContact: true,
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton.icon(
@@ -390,6 +392,8 @@ print('Response body: $responseBody');
     Function(String) onSaved, {
     bool obscure = false,
     TextInputType keyboardType = TextInputType.text,
+    bool isOptional = false,
+    bool isContact = false,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -410,7 +414,14 @@ print('Response body: $responseBody');
         ),
         obscureText: obscure,
         keyboardType: keyboardType,
-        validator: (v) => v!.isEmpty ? 'Enter $label' : null,
+        validator: (v) {
+          if (isOptional) return null;
+          if (v == null || v.isEmpty) return 'Enter $label';
+          if (isContact && !RegExp(r'^\d{10}$').hasMatch(v)) {
+            return 'Enter valid 10 digit contact number';
+          }
+          return null;
+        },
         onSaved: (v) => onSaved(v!),
       ),
     );
@@ -447,7 +458,15 @@ print('Response body: $responseBody');
             borderSide: const BorderSide(color: Colors.teal, width: 2),
           ),
         ),
-        validator: (v) => v!.isEmpty ? 'Enter $label' : null,
+        validator: (v) {
+          if (v == null || v.isEmpty) return 'Enter $label';
+          if (!RegExp(
+                  r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
+              .hasMatch(v)) {
+            return 'Password must be 8+ chars, include upper, lower, digit & special char';
+          }
+          return null;
+        },
         onSaved: (v) => onSaved(v!),
       ),
     );
