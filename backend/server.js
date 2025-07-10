@@ -11,7 +11,11 @@ const PORT = process.env.PORT || 8080;
 // Sync database and start server
 db.sequelize.sync({ alter: true }).then(() => {
   console.log("Database synced");
-  app.listen(PORT, '10.241.53.205', () => {
-    console.log(`Server running on http://10.241.53.205:${PORT}`);
+  app.listen(PORT, '10.246.57.205', () => {
+    console.log(`Server running on http://10.246.57.205:${PORT}`);
   });
+});
+
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err);
 });
