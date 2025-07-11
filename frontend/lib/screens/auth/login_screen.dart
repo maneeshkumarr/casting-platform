@@ -13,7 +13,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _passwordVisible = false;
 
-  final Color orange = const Color(0xFFFF4400);
+  final Color orange = const Color(0xFFFF4500);
   final Color peach = const Color(0xFFFFF0E6);
 
   @override
