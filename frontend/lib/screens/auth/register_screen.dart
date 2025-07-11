@@ -94,7 +94,7 @@ class _RegisterScreenState extends State<RegisterScreen>
     try {
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('https://your-backend-url.com/api/register'),
+        Uri.parse('http://10.241.53.205:8080/api/auth/register'),
       );
 
       request.fields.addAll({
@@ -120,7 +120,10 @@ class _RegisterScreenState extends State<RegisterScreen>
       }
 
       var response = await request.send();
-      if (response.statusCode == 200) {
+      final responseBody = await response.stream.bytesToString();
+      print('Response status: ${response.statusCode}');
+      print('Response body: $responseBody');
+      if (response.statusCode == 200 || response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('✅ Registered successfully!'),
@@ -212,6 +215,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                             child: buildTextField(
                               'Middle Name',
                               (v) => middleName = v,
+                              isOptional: true,
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -219,6 +223,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                             child: buildTextField(
                               'Last Name',
                               (v) => lastName = v,
+                              isOptional: true,
                             ),
                           ),
                         ],
@@ -290,7 +295,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                           'Kollywood',
                           'Mollywood',
                           'Sandalwood',
-                          'Hollywood',
+                         /* 'Hollywood', */
                           'Pollywood',
                           'Bhojiwood',
                           'Marathi',
@@ -318,6 +323,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                         'Contact Number',
                         (v) => contact = v,
                         keyboardType: TextInputType.phone,
+                        isContact: true,
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton.icon(
@@ -386,6 +392,8 @@ class _RegisterScreenState extends State<RegisterScreen>
     Function(String) onSaved, {
     bool obscure = false,
     TextInputType keyboardType = TextInputType.text,
+    bool isOptional = false,
+    bool isContact = false,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -406,7 +414,14 @@ class _RegisterScreenState extends State<RegisterScreen>
         ),
         obscureText: obscure,
         keyboardType: keyboardType,
-        validator: (v) => v!.isEmpty ? 'Enter $label' : null,
+        validator: (v) {
+          if (isOptional) return null;
+          if (v == null || v.isEmpty) return 'Enter $label';
+          if (isContact && !RegExp(r'^\d{10}$').hasMatch(v)) {
+            return 'Enter valid 10 digit contact number';
+          }
+          return null;
+        },
         onSaved: (v) => onSaved(v!),
       ),
     );
@@ -443,7 +458,15 @@ class _RegisterScreenState extends State<RegisterScreen>
             borderSide: const BorderSide(color: Colors.teal, width: 2),
           ),
         ),
-        validator: (v) => v!.isEmpty ? 'Enter $label' : null,
+        validator: (v) {
+          if (v == null || v.isEmpty) return 'Enter $label';
+          if (!RegExp(
+                  r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
+              .hasMatch(v)) {
+            return 'Password must be 8+ chars, include upper, lower, digit & special char';
+          }
+          return null;
+        },
         onSaved: (v) => onSaved(v!),
       ),
     );
