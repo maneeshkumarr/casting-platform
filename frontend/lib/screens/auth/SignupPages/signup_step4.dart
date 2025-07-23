@@ -1,8 +1,6 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'signup_step5.dart';
 
 class SignupStep4 extends StatefulWidget {
   @override
@@ -11,11 +9,9 @@ class SignupStep4 extends StatefulWidget {
 
 class _SignupStep4State extends State<SignupStep4> {
   final Color orange = Color(0xFFFF4400);
-  final Color background = Color(0xFFFFF7F2); // soft beige background
+  final Color background = Color(0xFFFFF7F2);
 
   final ImagePicker _picker = ImagePicker();
-
-  // Stores picked images
   List<File?> selectedImages = [null, null, null];
 
   @override
@@ -43,20 +39,18 @@ class _SignupStep4State extends State<SignupStep4> {
                   Spacer(flex: 2),
                 ],
               ),
-
               SizedBox(height: 12),
 
               // Progress Dots
               Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children:
-                      List.generate(5, (index) => _buildDot(index == 3)),
+                  children: List.generate(5, (index) => _buildDot(index == 3, index)),
                 ),
               ),
-
               SizedBox(height: 32),
 
+              // Title and subtitle
               Text(
                 "Upload your photos",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -66,7 +60,6 @@ class _SignupStep4State extends State<SignupStep4> {
                 "Upload recent headshots or portfolio photos",
                 style: TextStyle(color: Colors.grey[600]),
               ),
-
               SizedBox(height: 32),
 
               // 3 image upload boxes
@@ -86,14 +79,15 @@ class _SignupStep4State extends State<SignupStep4> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    bool allSelected =
-                        selectedImages.every((image) => image != null);
+                    bool allSelected = selectedImages.every((image) => image != null);
 
                     if (!allSelected) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text("Please upload all 3 images"),
-                        backgroundColor: Colors.red,
-                      ));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Please upload all 3 images"),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
                       return;
                     }
 
@@ -116,18 +110,41 @@ class _SignupStep4State extends State<SignupStep4> {
     );
   }
 
-  Widget _buildDot(bool isActive) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 4),
-      width: 10,
-      height: 10,
-      decoration: BoxDecoration(
-        color: isActive ? orange : Colors.grey.shade300,
-        shape: BoxShape.circle,
+  /// Dot indicator with onTap navigation
+  Widget _buildDot(bool isActive, int index) {
+    return GestureDetector(
+      onTap: () {
+        switch (index) {
+          case 0:
+            Navigator.pushNamed(context, '/signupStep1');
+            break;
+          case 1:
+            Navigator.pushNamed(context, '/signupStep2');
+            break;
+          case 2:
+            Navigator.pushNamed(context, '/signupStep3');
+            break;
+          case 3:
+            // Stay on current
+            break;
+          case 4:
+            Navigator.pushNamed(context, '/signupStep5');
+            break;
+        }
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 4),
+        width: 10,
+        height: 10,
+        decoration: BoxDecoration(
+          color: isActive ? orange : Colors.grey.shade300,
+          shape: BoxShape.circle,
+        ),
       ),
     );
   }
 
+  /// Image upload box
   Widget _buildImageBox(int index) {
     return GestureDetector(
       onTap: () async {
